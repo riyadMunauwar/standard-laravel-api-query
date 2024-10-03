@@ -1,11 +1,21 @@
 # Product API Documentation
 
-This document outlines the usage of the Product API, which supports advanced querying capabilities including field selection, filtering, searching, sorting, and more.
+## Introduction
+
+This document outlines the usage of the Product API, which supports advanced querying capabilities including field selection, filtering, searching, sorting, and more. This API follows RESTful principles and implements standard practices for request/response handling and error management.
 
 ## Base URL
 
 ```
 https://api.example.com/v1
+```
+
+## Authentication
+
+This API uses Bearer token authentication. Include the token in the Authorization header of your requests:
+
+```
+Authorization: Bearer <your_access_token>
 ```
 
 ## Endpoints
@@ -130,53 +140,37 @@ Example error response:
 ```json
 {
   "error": {
-    "code": "validation_error",
     "message": "The given data was invalid.",
-    "details": {
+    "errors": {
       "price": ["The price must be a number."]
     }
   }
 }
 ```
 
+Common error codes:
+
+- 400 Bad Request: The request was invalid or cannot be served.
+- 401 Unauthorized: The request requires authentication.
+- 403 Forbidden: The server understood the request but refuses to authorize it.
+- 404 Not Found: The requested resource could not be found.
+- 422 Unprocessable Entity: The request was well-formed but was unable to be followed due to semantic errors.
+- 429 Too Many Requests: The user has sent too many requests in a given amount of time.
+- 500 Internal Server Error: The server encountered an unexpected condition which prevented it from fulfilling the request.
+
 ## Rate Limiting
 
-The API implements rate limiting to prevent abuse. The current limit is 100 requests per minute per API key. The following headers will be included in the response:
+The API implements rate limiting to prevent abuse. The current limit is 1000 requests per hour per API key. The following headers will be included in the response:
 
-- `X-RateLimit-Limit`: The maximum number of requests you're permitted to make per minute.
+- `X-RateLimit-Limit`: The maximum number of requests you're permitted to make per hour.
 - `X-RateLimit-Remaining`: The number of requests remaining in the current rate limit window.
 - `X-RateLimit-Reset`: The time at which the current rate limit window resets in UTC epoch seconds.
 
 If you exceed the rate limit, you will receive a 429 Too Many Requests response.
 
-## Examples
+## Versioning
 
-1. Get all active electronics products, priced between $100 and $500, sorted by price (ascending):
-
-```
-GET /products?filter[status]=active&filter[category]=electronics&filter[price][gte]=100&filter[price][lte]=500&sort=price:asc
-```
-
-2. Search for smartphones in the name or description, include the manufacturer, and get the second page of results:
+The API is versioned to ensure backward compatibility. The current version is v1. Include the version in the URL:
 
 ```
-GET /products?search=smartphone&search_fields=name,description&include=manufacturer&page=2&per_page=20
-```
-
-3. Get the average price and total quantity of products created in 2023:
-
-```
-GET /products?start_date=2023-01-01&end_date=2023-12-31&aggregate[avg]=price&aggregate[sum]=quantity
-```
-
-4. Find products within 10km of a specific location, sorted by distance:
-
-```
-GET /products?near[lat]=40.7128&near[lng]=-74.0060&near[distance]=10&sort=distance:asc
-```
-
-## Changelog
-
-- **2024-10-03**: Initial release of the API documentation.
-
-For any questions or support, please contact our API team at api-support@example.com.
+https://api.example.com/v1
